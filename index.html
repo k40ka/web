@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balkanvert</title>
+    <style>
+        /* GENERAL RESET */
+        h2 {
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: bold;
+            color: #a81c1c;
+            transition: color 0.3s ease, letter-spacing 0.3s ease;
+            cursor: pointer;
+        }
+
+        h2:hover {
+            color: #bd4d07;
+            /* very subtle shade change */
+            letter-spacing: 0.5px;
+            /* tiny text expansion */
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #53e33a30;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* BANNER */
+        .banner {
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .banner img {
+            width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .banner h1 {
+            position: absolute;
+            top: 150%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+            z-index: 2;
+        }
+
+        .banner p {
+            position: absolute;
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: #eee;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+            z-index: 2;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: #2d572c;
+            padding: 12px 0;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar li {
+            position: relative;
+            margin: 0 20px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            padding: 8px 15px;
+            transition: background 0.3s;
+        }
+
+        .navbar a:hover {
+            background: #97e371;
+            border-radius: 4px;
+        }
+
+        /* DROPDOWN */
+        < !-- < !-- .dropdown-content {
+            display: none;
+            position: absolute;
+            background: #3d773c;
+            min-width: 180px;
+            z-index: 100;
+            border-radius: 4px;
+        }
+
+        -->.dropdown-content li {
+            margin: 0;
+        }
+
+        .dropdown-content a {
+            display: block;
+            padding: 10px;
+            color: #fff;
+            -->
+        }
+
+        .dropdown-content a:hover {
+            background: #4e944d;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* MAIN CONTENT */
+        main {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #179a3c;
+            text-align: center;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        .product,
+        article {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .product img,
+        article img {
+            max-width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product p,
+        article p {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .gallery {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .gallery img {
+            width: 45%;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        /* CONTACT */
+        #contact {
+            background: #2d572c57;
+            color: #fff;
+            text-align: center;
+            padding: 40px 20px;
+            border-radius: 8px;
+        }
+
+        #contact p {
+            margin: 8px 0;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #1e3d1d;
+            color: #eee;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<!-- Password Lock Overlay -->
+<div id="lockOverlay"
+    style="position:fixed;top:0;left:0;width:100%;height:100%;background:#111;color:white;display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:9999;font-family:Arial, sans-serif;">
+    <h2>Enter Password to Access Website</h2>
+    <input type="password" id="passwordInput" placeholder="Enter password"
+        style="padding:10px;font-size:18px;margin-top:10px;border:none;border-radius:5px;">
+    <button onclick="checkPassword()"
+        style="margin-top:10px;padding:10px 20px;font-size:18px;cursor:pointer;border:none;border-radius:5px;background-color:#4CAF50;color:white;">Unlock</button>
+    <p id="errorMsg" style="margin-top:10px;color:red;display:none;">Incorrect password, try again.</p>
+</div>
+
+<script>
+    const correctPassword = "1234";
+
+    function checkPassword() {
+        const input = document.getElementById("passwordInput").value;
+        const errorMsg = document.getElementById("errorMsg");
+
+        if (input === correctPassword) {
+            document.getElementById("lockOverlay").style.display = "none";
+            document.body.style.overflow = "auto"; // restore scrolling if needed
+        } else {
+            errorMsg.style.display = "block";
+        }
+    }
+
+    document.getElementById("passwordInput").addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            checkPassword();
+        }
+    });
+</script>
+
+
+<body> <!-- Banner -->
+    <header class="banner"> <img src="banner1.png" alt="Balkanvert Banner">
+        <h1>Balkanvert</h1>
+        <p>Agriculture • Imports • Sustainable Solutions</p>
+    </header> <!-- Navigation -->
+    <nav class="navbar">
+        <ul>
+            <li class="dropdown up"> <a href="#lands">Agricultural Lands ▾</a>
+                <ul class="dropdown-content">
+                    <li><a href="#pumpkin">Pumpkins</a></li>
+                    <li><a href="#sweetpotato">Sweet Potatoes</a></li>
+                </ul>
+            </li>
+            <li><a href="#products">Products</a></li>
+            <li class="dropdown">
+                <ul class="dropdown-content">
+                    <li><a href="#spray">Spray Systems</a></li>
+                    <li><a href="#drip">Drip Systems</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+        </ul>
+        </li>
+        <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav> <!-- Main Content -->
+    <main> <!-- Products -->
+        <section id="products">
+            <div class="banner-text">
+                <h1 class="company-name">Balkanvert</h1>
+                <p class="tagline">"Balkanvert is a leading agricultural and trading company specializing in the import
+                    and export of high-quality agricultural products. We source premium nuts, oils, and other food
+                    commodities from trusted international suppliers to meet the demands of both local and global
+                    markets. Committed to sustainability and innovation, we provide modern solutions for farming,
+                    irrigation, and crop management. Our team ensures that every product meets rigorous quality
+                    standards, supporting businesses, retailers, and farmers alike. With a focus on reliability and
+                    excellence, Balkanvert bridges global trade with local agricultural expertise."</p>
+            </div>
+            <div class="product">
+                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                _____________________________________________________________________
+
+                <h2>Nutts, seeds and oils</h2>
+                <article id="spray">
+
+
+                    <h3>Pumpkin seeds</h3>
+                    <p> Our premium pumpkin seeds are carefully selected for their rich flavor and high nutritional
+                        value. Perfect for snacking or adding to your favorite dishes, they are packed with protein,
+                        healthy fats, and essential minerals. Enjoy a wholesome, crunchy treat that fuels your body
+                        naturally. " </p>
+                    <img src="seeds.jpg" alt="Spray Irrigation">
+                    <img src="seeds2.jpg" alt="Spray Irrigation">
+
+                    <p>
+                        5–10 kg packages: <strong>€9</strong>/kg<br>
+                        50 kg packages: <strong>€8</strong>/kg<br>
+                        Bulk orders up to 1000 kg: <strong>€7</strong>/kg
+                    </p>
+                    <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+                    <h3>Cashew</h3>
+                    <p>Premium cashew nuts derived from Africa, packaged in 10kg bags. These cashews are carefully
+                        selected, naturally rich in nutrients, and ideal for wholesale, retail, and food processing
+                        industries. Their creamy taste makes them suitable for both snacks and culinary recipes.</p>
+                    <img src="cashew.jpg" alt="Cashew Nuts"> <img src="cashew2.jpg" alt="Cashew Nuts">
+
+                    <p>Available in
+                        5–10 kg packages at <strong>€18/kg<br></strong> 50 kg packages at
+                        <strong>€16/kg<br></strong> For larger orders up to 1000 kg, we offer tiered pricing
+                        starting
+                        from
+                        <strong>€15/kg<br></strong>.
+                    </p>
+                    <div class="product">
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                        <br>____________________________________________
+
+                        <h2>Coconut products
+
+                            <br>
+                        </h2>
+                        <h3>Coconut Oil</h3>
+                        <img src="coconut.webp" alt="Coconut Oil"> <img src="oil2.jpg" alt="Coconut Oil">
+                        <p>High-quality cold-pressed coconut oil imported from Africa. Available in 5L, 10L, and 15L
+                            packages. Rich in flavor and healthy fats, it is perfect for culinary use, skincare, and
+                            cosmetics. Sourced from trusted suppliers to ensure purity and sustainability.</p>
+
+                        <p>
+                            5–10 kg packages: <strong>€12</strong>/kg<br>
+                            50 kg packages: <strong>€10.50</strong>/kg<br>
+                            Bulk orders up to 1000 kg: <strong>€9.50</strong>/kg
+                        </p>
+                        <h3>Coconut Butter</h3>
+                        <img src="coconut3.jpg" alt="Coconut Oil">
+                        <p>
+                            5–10 kg packages: <strong>€13</strong>/kg<br>
+                            50 kg packages: <strong>€11.50</strong>/kg<br>
+                            Orders up to 1000 kg: <strong>€10.50</strong>/kg
+                        </p>
+
+
+
+                    </div>
+                    <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+                    <br>____________________________________________
+
+                    <h2>Shea products</h2>
+                    <h3>Shea Oil </h3>
+                    <p>"Our pure shea oil, sourced directly from African cooperatives, is carefully extracted to
+                        preserve its natural nutrients and rich texture. Ideal for cosmetics, skincare, and hair care
+                        products, it combines traditional African heritage with high-quality standards for global
+                        export."</p>
+                    <img src="Shea.jpg" alt="Coconut Oil">
+                    <img src="Shea3.jpg" alt="Coconut Oil">
+
+                    <p>
+                        5–10 kg packages: <strong>€14</strong>/kg<br>
+                        50 kg packages: <strong>€12.50</strong>/kg<br>
+                        Orders up to 1000 kg: <strong>€11.50</strong>/kg
+                    </p>
+                    <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                    <p>
+                    <h3>Shea Butter</h3>
+                    <p>"Carefully sourced and crafted, this shea butter offers the highest quality with a rich, creamy
+                        texture that nourishes and protects the skin. It melts smoothly, making it perfect for skincare,
+                        cosmetics, and personal care products. Known for its purity and effectiveness, the company's
+                        shea butter is free from additives and sustainably produced. Ideal for those who value premium
+                        natural ingredients, it delivers exceptional results every time."</p>
+                    <img src="shea2.jpg" alt="Coconut Oil">
+                    <img src="sheabutter.jpg" alt="Coconut Oil">
+                    <p>Available in 5–10 kg packages at €<strong>16</strong>/kg, and 50 kg packages at
+                        €<strong>14.50</strong>/kg
+                        5–10 kg packages: <strong>€14</strong>/kg<br>
+                        50 kg packages: <strong>€12.50</strong>/kg<br>
+                        Orders up to 1000 kg: <strong>€11.50</strong>/kg
+                    </p>
+
+                    <article id="sweetpotato">
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+                        <br>_______________________
+
+
+                        <h2>Coffee </h2>
+                        <div class="product">
+                            <p>Experience the rich aroma and bold flavor of our imported, top-grade African coffee.
+                                Sourced from
+                                the finest plantations, each bean is carefully selected to ensure exceptional quality
+                                and a
+                                smooth, full-bodied taste. Perfect for coffee connoisseurs, it delivers a vibrant,
+                                authentic
+                                flavor in every cup. Elevate your coffee moments with the premium excellence of African
+                                coffee.
+                            </p>
+
+
+                            <img src="coffee.jpg" alt="Sweet Potato Field 1">
+                            <img src="coffee 2.webp" alt="Sweet Potato Field 2">
+                            <h3> Ethiopian Yirgacheffe</h3>
+                            5–10 kg packages: <strong>€18</strong>/kg<br>
+                            50 kg packages: <strong>€16</strong>/kg<br>
+                            Orders up to 1000 kg: <strong>€14</strong>/kg
+                            </p>
+                            <h3> Kenyan AA</h3>
+                            5–10 kg packages: <strong>€22</strong>/kg<br>
+                            50 kg packages: <strong>€20</strong>/kg<br>
+                            Orders up to 1000 kg: <strong>€18</strong>/kg
+
+                            <h3> Jamaican Blue Mountain</h3>
+                            5–10 kg packages: <strong>€24</strong>/kg<br>
+                            50 kg packages: <strong>€22</strong>/kg<br>
+                            Orders up to 1000 kg: <strong>€20</strong>/kg
+                            </p>
+
+                        </div>
+                    </article>
+                    <article id="sweetpotato">
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+
+                        __________________________________________
+                        <h2>Irrigation Systems</h2>
+                        <article id="spray">
+                            <h3>Spray Systems</h3>
+                            <p> The technology of spray systems ensure efficient water distribution across large
+                                agricultural
+                                fields. Designed for durability and reliability, they improve crop yield while reducing
+                                labor. Ideal
+                                for farmers seeking to maximize water efficiency with minimal effort. Manufactured with
+                                eco-conscious materials and easy-to-install parts.</p>
+                            <img src="spray.png" alt="Spray Irrigation">
+                            <img src="spray2.jpg" alt="Spray Irrigation">
+                            <p>
+                                Our modern irrigation systems provide efficient water distribution for farms of all
+                                sizes. Reliable,
+                                durable, and easy to install, they ensure your crops get the right amount of water,
+                                reducing waste
+                                and boosting yield.<br><br>
+
+                                Standard System: <strong>€450</strong> each<br>
+                                Advanced System: <strong>€650</strong> each<br>
+                                Bulk Farm Package (5+ units): <strong>€580</strong> each
+                            </p>
+
+
+
+                        </article>
+                        <article id="drip">
+                            <h3>Drip Systems</h3>
+                            <p>Our drip irrigation systems deliver precision watering directly to the plant roots,
+                                reducing water
+                                waste by up to 60%. They are excellent for crops that require consistent hydration and
+                                soil-friendly
+                                moisture. Easy to maintain, customizable for different crops, and built to last even in
+                                intensive
+                                farming environments.
+                            </p>
+
+                            <img src="drip.jpg" alt="Drip Irrigation">
+                            <img src="spray3.jpg" alt="Spray Irrigation">
+                            <p>
+                                We also offer modular drip irrigation kits, perfect for greenhouses and vegetable
+                                gardens. Flexible,
+                                scalable, and easy to maintain, they help conserve water while improving crop quality.
+                            </p><br><br>
+                            <img src="drip3.jpg" alt="Drip Irrigation">
+
+
+                            <p>Starter Kit (5–10 m²): <strong>€120</strong> each<br>
+                                Professional Kit (20–50 m²): <strong>€250</strong> each<br>
+                                Bulk Greenhouse Package (5+ kits): <strong>€210</strong> each
+                            </p>
+                        </article>
+        </section> <!-- Lands -->
+        <div id="lands">
+        </div>
+        <article id="sweetpotato">
+            <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+            <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+
+            __________________________________________
+            <h2>Agricultural Lands</h2>
+            <article id="pumpkin">
+
+
+
+            </article>
+
+            </div>
+            <div class="gallery">
+                <h3>Pumpkin Fields</h3>
+                <div class="gallery">
+
+                    <img src="pumpkin1.jpg" alt="Pumpkin Field 1">
+                    <img src="pumpkin2.jpg" alt="Pumpkin Field 2">
+                    <p>"Investing in land suitable for pumpkins ensures high yields and consistent quality. Ideal fields
+                        have well-drained soil, ample sunlight, and easy access to water for irrigation. The company
+                        carefully selects plots that meet these standards, helping growers maximize productivity.
+                        Purchasing pumpkin fields with proven soil fertility and climate conditions guarantees a strong
+                        return on investment for both commercial and seasonal crops.".
+                    </p>
+                    <h3>Sweet Potato Fields</h3>
+                    <div class="gallery">
+
+                        <img src="potato1.jpg" alt="Pumpkin Field 1">
+                        <img src="potato.jpg" alt="Pumpkin Field 2">
+                        Choosing the right land for sweet potato growth makes all the difference in achieving healthy
+                        harvests and steady returns. Sweet potatoes love warm climates, sandy soils, and just the right
+                        balance of nutrients — and when the land is well-prepared, they thrive beautifully. With the
+                        right
+                        fields, growers can look forward to reliable yields and delicious, high-quality crops season
+                        after
+                        season. Buying land suited for sweet potatoes is not just a smart decision, but also a rewarding
+                        step toward sustainable farming.
+
+
+        </article>
+
+        </div>
+        <article id="sweetpotato">
+            <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+            <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+
+            __________________________________________
+            <h2> Scrap metal </h2>
+            <article id="gallery">
+                <h3>Metalurgy and raw materials</h3>
+                <p>
+                    "For over a decade, our company has been at the forefront of the scrap metal trade,
+                    sourcing high-quality materials from trusted partners around the world. We specialize in
+                    both the
+                    export and import of ferrous and non-ferrous metals, ensuring sustainable recycling
+                    practices
+                    while meeting the demands of modern industries. Our journey began with a small local
+                    network,
+                    and today we connect global markets, turning scrap into valuable resources.
+
+                    We are currently looking to purchase various types of scrap metals, including copper,
+                    aluminum, steel, and iron, as well as old appliances such as kitchen machines, washing
+                    machines,
+                    and refrigerators. Our competitive buying rates include:<br>
+
+                    Copper: <strong>€8.50</strong> per kg<br>
+                    Aluminum: <strong>€2.20</strong> per kg<br>
+                    Steel: <strong>€0.80</strong> per kg<br>
+                    Old washing machines: <strong>€45</strong> each
+                </p>
+
+                </p>
+
+                <div class="pumpkin"> <img src="scrap.jpg" alt="d 1"> <img src="scrap2.jpg" alt="d 2">
+                    <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                    <article id="sweetpotato">
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                        <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+
+
+                        __________________________________________
+                        <h2>Electric Bikes </h2>
+                        <article id="pumpkin">
+                            <h3>Delivery services</h3>
+                            <p>"Our electric bikes provide a fast, eco-friendly, and efficient solution for
+                                delivery
+                                services, reducing costs and carbon emissions. Designed for urban mobility, they
+                                combine
+                                speed, reliability, and easy handling to ensure timely deliveries. Perfect for
+                                businesses
+                                looking to modernize their logistics sustainably."</p>
+                            <div class="pumpkin">
+                                <img src="bike1.jpg" alt="d 1"> <img src="bike2.jpg" alt="d 2">
+                                <p>Electric Bikes for Sale – Boost Your Delivery Efficiency
+                                    Upgrade your delivery operations with our state-of-the-art electric bikes.
+                                    Fast,
+                                    eco-friendly, and reliable, they help you cut costs, reduce carbon
+                                    emissions,
+                                    and
+                                    navigate urban areas with ease. Designed for seamless handling and maximum
+                                    efficiency,
+                                    they’re the perfect solution for businesses aiming to modernize their
+                                    logistics
+                                    sustainably.
+
+                                    Purchase Options:
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                Standard Model: <strong>€1,000</strong> (excl. delivery) /
+                                <strong>€1,150</strong> (incl. delivery)
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                Pro Model with Extended Battery: <strong>€1,200</strong> (excl. delivery) /
+                                <strong>€1,350</strong> (incl. delivery)
+
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                <i>Invest in smarter, greener deliveries today and experience the future of
+                                    urban
+                                    logistics
+                                    firsthand!</i></p>
+
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                <h3>Our Warehouse</h3> <img src="warehouseOil.jpg" alt="1"> <img src="warehouseShea.jpg"
+                                    alt=" 1">
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                <h3>ㅤㅤㅤㅤㅤㅤ</h3>
+                                _____________
+                                <h2> Offers </h2>
+                                <h3>Special Coffee Offer</h3>
+                                <p>Buy <strong>25 kg</strong> of premium Ethiopian Yirgacheffe coffee at
+                                    <strong>€20</strong>/kg, and receive an extra <strong>5 kg</strong> free of charge.
+                                    That’s a total of <strong>30 kg</strong> for just <strong>€500</strong>, giving you
+                                    both quality and savings in one deal.
+                                </p>
+                                <img src="offer2.jpg" alt="ld 1">
+
+                                <h3>Shea & Coconut Combo</h3>
+                                <p>Order <strong>10 kg</strong> packages (30 pieces) that include Shea Butter, Shea Oil,
+                                    Coconut Oil, and Coconut Butter — all at <strong>€12.50</strong>/kg. With every bulk
+                                    order, you’ll receive <strong>2 free</strong> gift bags pre-packed with all four
+                                    products, ready to impress your customers or loved ones. Total package price:
+                                    <strong>€375</strong>.
+                                </p>
+
+                                <img src="offer3.jpg" alt="ld 1">
+
+
+                                <h3> Shea/Coconut Oil and Butter Bulk Deal</h3>
+                                <img src="bulk.jpg" alt="ld 1">
+                                <p>Purchase <strong>50+ kg</strong> of cosmetics Oil at <strong>€18</strong>/kg
+                                    and benefit from our bulk discount price of only <strong>€1,700</strong> (instead of
+                                    <strong>€1,800</strong>). This exclusive offer is perfect for businesses looking to
+                                    secure premium Argan Oil at competitive rates.
+                                </p>
+                                </section> <!-- Contact -->
+                                <section id="contact">
+                                    <h2>Contact Us</h2>
+                                    <p>Email: info@balkanvert.com</p>
+                                    <p>Phone: +359 88 123 4567</p>
+                                    <p>Address: Sofia, Bulgaria</p>
+                                </section>
+    </main> <!-- Footer -->
+    <footer>
+        <p>© 2025 Balkanvert. All rights reserved.</p>
+    </footer>
+</body>
+
+</html> Can you fix the menus as I have added a bunch of new stuff but the menus are not active? If other things need
+fixing please do so and provide the full code
